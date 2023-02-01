@@ -333,6 +333,141 @@
           }
         }
       }
+    },
+    "/api/Breweries/{id}/Sale": {
+      "put": {
+        "tags": [
+          "Breweries"
+        ],
+        "operationId": "Breweries_AddSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBreweryCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Wholesalers/{id}/Sale": {
+      "post": {
+        "tags": [
+          "Wholesalers"
+        ],
+        "operationId": "Wholesalers_AddSale",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSaleCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Wholesalers/{id}/UpdateQuantity": {
+      "put": {
+        "tags": [
+          "Wholesalers"
+        ],
+        "operationId": "Wholesalers_UpdateBeerQuantity",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBeerQuantityCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -458,6 +593,42 @@
           },
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "AddSaleCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "wholesalerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "beerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateBeerQuantityCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "wholesalerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "beerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       }

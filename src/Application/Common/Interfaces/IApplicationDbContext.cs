@@ -13,5 +13,7 @@ public interface IApplicationDbContext
 
     DbSet<WholesalerBeer> WholesalerBeerItems { get; }
 
+    DbSet<Sale> Sales { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

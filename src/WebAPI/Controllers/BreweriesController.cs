@@ -41,6 +41,19 @@ public class BreweriesController : ApiControllerBase
         return NoContent();
     }
 
+    [HttpPut("{id}/Sale")]
+    public async Task<ActionResult> AddSale(int id, UpdateBreweryCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
+        await Mediator.Send(command);
+
+        return NoContent();
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {

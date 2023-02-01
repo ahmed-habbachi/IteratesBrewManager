@@ -30,6 +30,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     
     public DbSet<WholesalerBeer> WholesalerBeerItems => Set<WholesalerBeer>();
 
+    public DbSet<Sale> Sales => Set<Sale>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
