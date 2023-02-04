@@ -22,7 +22,7 @@ public class CreateBreweryCommandHandler : IRequestHandler<CreateBreweryCommand,
     {
         var entity = new Brewery(request.Name);
 
-        _context.Breweries.Add(new Brewery(request.Name));
+        _context.Breweries.Add(entity);
 
         await _context.SaveChangesAsync(cancellationToken);
 

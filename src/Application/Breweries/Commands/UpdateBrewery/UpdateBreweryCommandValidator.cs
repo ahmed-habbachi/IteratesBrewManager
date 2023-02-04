@@ -5,6 +5,8 @@ public class UpdateBreweryCommandValidator : AbstractValidator<UpdateBreweryComm
 {
     public UpdateBreweryCommandValidator()
     {
+        RuleFor(v => v.Id)
+            .GreaterThan(0);
         RuleFor(v => v.Name)
             .MaximumLength(200)
             .NotEmpty();

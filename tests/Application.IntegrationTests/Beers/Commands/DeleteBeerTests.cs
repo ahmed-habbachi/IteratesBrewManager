@@ -1,10 +1,10 @@
 ﻿using IteratesBrewManager.Application.Common.Exceptions;
 using IteratesBrewManager.Application.Beers.Commands.CreateBeer;
 using IteratesBrewManager.Application.Beers.Commands.DeleteBeer;
+using IteratesBrewManager.Application.Breweries.Commands.CreateBrewery;
 using IteratesBrewManager.Domain.Entities;
 using FluentAssertions;
 using NUnit.Framework;
-using IteratesBrewManager.Application.Breweries.Commands.CreateBrewery;
 
 namespace IteratesBrewManager.Application.IntegrationTests.Beers.Commands;
 

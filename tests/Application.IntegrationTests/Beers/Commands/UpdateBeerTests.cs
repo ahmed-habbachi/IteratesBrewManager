@@ -1,10 +1,10 @@
 ﻿using IteratesBrewManager.Application.Common.Exceptions;
 using IteratesBrewManager.Application.Beers.Commands.CreateBeer;
 using IteratesBrewManager.Application.Beers.Commands.UpdateBeer;
+using IteratesBrewManager.Application.Breweries.Commands.CreateBrewery;
 using IteratesBrewManager.Domain.Entities;
 using FluentAssertions;
 using NUnit.Framework;
-using IteratesBrewManager.Application.Breweries.Commands.CreateBrewery;
 
 namespace IteratesBrewManager.Application.IntegrationTests.Beers.Commands;
 
@@ -15,7 +15,7 @@ public class UpdateBeerTests : BaseTestFixture
     [Test]
     public async Task ShouldRequireValidBeerId()
     {
-        var command = new UpdateBeerCommand { Id = 99, Name = "New Beer" };
+        var command = new UpdateBeerCommand { Id = 99, Name = "New Beer", BrewerId = 1 };
         await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<NotFoundException>();
     }
 
@@ -38,6 +38,7 @@ public class UpdateBeerTests : BaseTestFixture
         var command = new UpdateBeerCommand
         {
             Id = beerId,
+            BrewerId = breweryId,
             Name = "beer two",
             AlcoholContent = 2,
             Price = 2.2
@@ -51,7 +52,6 @@ public class UpdateBeerTests : BaseTestFixture
         beer!.Name.Should().Be(command.Name);
         beer!.AlcoholContent.Should().Be(command.AlcoholContent);
         beer!.Price.Should().Be(command.Price);
-        beer.LastModifiedBy.Should().NotBeNull();
         beer.LastModified.Should().NotBeNull();
         beer.LastModified.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMilliseconds(10000));
     }

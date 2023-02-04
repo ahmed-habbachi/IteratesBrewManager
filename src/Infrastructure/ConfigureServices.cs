@@ -1,7 +1,6 @@
 ﻿using IteratesBrewManager.Application.Common.Interfaces;
 using IteratesBrewManager.Infrastructure.Persistence;
 using IteratesBrewManager.Infrastructure.Persistence.Interceptors;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

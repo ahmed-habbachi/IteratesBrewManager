@@ -11,6 +11,5 @@ public class UpdateBeerCommandValidator : AbstractValidator<UpdateBeerCommand>
             .NotEmpty();
         RuleFor(v => v.BrewerId)
             .GreaterThan(0);
-        //TODO: Add rules for brewer must exists
     }
 }
