@@ -28,9 +28,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
      
     public DbSet<Wholesaler> Wholesalers => Set<Wholesaler>();
     
-    public DbSet<WholesalerBeer> WholesalerBeerItems => Set<WholesalerBeer>();
+    public DbSet<WholesalerBeerStock> WholesalerBeerStocks => Set<WholesalerBeerStock>();
 
     public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<Quote> Quotes => Set<Quote>();
+  
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

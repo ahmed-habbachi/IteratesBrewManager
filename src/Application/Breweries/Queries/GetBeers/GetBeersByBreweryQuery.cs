@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IteratesBrewManager.Application.Beers.Queries.GetBeers;
 
-public record GetBeersByBreweryQuery : IRequest<IEnumerable<BreweryDto>>;
+public record GetBeersByBreweryQuery(int BreweryId) : IRequest<IEnumerable<BeerDto>>;
 
-public class GetBeersByBreweryHandler : IRequestHandler<GetBeersByBreweryQuery, IEnumerable<BreweryDto>>
+public class GetBeersByBreweryHandler : IRequestHandler<GetBeersByBreweryQuery, IEnumerable<BeerDto>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -20,11 +20,11 @@ public class GetBeersByBreweryHandler : IRequestHandler<GetBeersByBreweryQuery, 
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<BreweryDto>> Handle(GetBeersByBreweryQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<BeerDto>> Handle(GetBeersByBreweryQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Breweries.Include(b=>b.Beers)
+        return await _context.Beers.Where(b => b.BrewerId == request.BreweryId)
                 .AsNoTracking()
-                .ProjectTo<BreweryDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<BeerDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
     }
 }

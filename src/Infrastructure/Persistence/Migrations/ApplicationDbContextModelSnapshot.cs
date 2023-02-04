@@ -92,6 +92,80 @@ namespace IteratesBrewManager.Infrastructure.Persistence.Migrations
                     b.ToTable("Breweries");
                 });
 
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Quote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PriceToPay")
+                        .HasColumnType("float");
+
+                    b.Property<int>("WholesalerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WholesalerId");
+
+                    b.ToTable("Quotes");
+                });
+
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.QuoteItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("BeerId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("BeerPrice")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuoteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeerId");
+
+                    b.HasIndex("QuoteId");
+
+                    b.ToTable("QuoteItem");
+                });
+
             modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Sale", b =>
                 {
                     b.Property<int>("Id")
@@ -154,7 +228,7 @@ namespace IteratesBrewManager.Infrastructure.Persistence.Migrations
                     b.ToTable("Wholesalers");
                 });
 
-            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.WholesalerBeer", b =>
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.WholesalerBeerStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,7 +263,7 @@ namespace IteratesBrewManager.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("WholesalerId");
 
-                    b.ToTable("WholesalerBeerItems");
+                    b.ToTable("WholesalerBeerStocks");
                 });
 
             modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Beer", b =>
@@ -203,9 +277,39 @@ namespace IteratesBrewManager.Infrastructure.Persistence.Migrations
                     b.Navigation("Brewer");
                 });
 
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Quote", b =>
+                {
+                    b.HasOne("IteratesBrewManager.Domain.Entities.Wholesaler", "Wholesaler")
+                        .WithMany()
+                        .HasForeignKey("WholesalerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Wholesaler");
+                });
+
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.QuoteItem", b =>
+                {
+                    b.HasOne("IteratesBrewManager.Domain.Entities.Beer", "Beer")
+                        .WithMany()
+                        .HasForeignKey("BeerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IteratesBrewManager.Domain.Entities.Quote", "Quote")
+                        .WithMany("QuoteItems")
+                        .HasForeignKey("QuoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Beer");
+
+                    b.Navigation("Quote");
+                });
+
             modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Sale", b =>
                 {
-                    b.HasOne("IteratesBrewManager.Domain.Entities.WholesalerBeer", "WholesalerBeerItem")
+                    b.HasOne("IteratesBrewManager.Domain.Entities.WholesalerBeerStock", "WholesalerBeerItem")
                         .WithMany()
                         .HasForeignKey("WholesalerBeerItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -214,7 +318,7 @@ namespace IteratesBrewManager.Infrastructure.Persistence.Migrations
                     b.Navigation("WholesalerBeerItem");
                 });
 
-            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.WholesalerBeer", b =>
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.WholesalerBeerStock", b =>
                 {
                     b.HasOne("IteratesBrewManager.Domain.Entities.Beer", "Beer")
                         .WithMany()
@@ -236,6 +340,11 @@ namespace IteratesBrewManager.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Brewery", b =>
                 {
                     b.Navigation("Beers");
+                });
+
+            modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Quote", b =>
+                {
+                    b.Navigation("QuoteItems");
                 });
 
             modelBuilder.Entity("IteratesBrewManager.Domain.Entities.Wholesaler", b =>

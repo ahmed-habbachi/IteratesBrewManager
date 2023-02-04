@@ -23,7 +23,7 @@ public class AddSaleCommandHandler : IRequestHandler<AddSaleCommand, int>
 
     public async Task<int> Handle(AddSaleCommand request, CancellationToken cancellationToken)
     {
-        var wholesalerBeer = await _context.WholesalerBeerItems.SingleAsync(wb => wb.BeerId == request.BeerId && wb.WholesalerId == request.WholesalerId, cancellationToken);
+        var wholesalerBeer = await _context.WholesalerBeerStocks.SingleAsync(wb => wb.BeerId == request.BeerId && wb.WholesalerId == request.WholesalerId, cancellationToken);
 
         var entity = new Sale();
         entity.WholesalerBeerItem = wholesalerBeer;

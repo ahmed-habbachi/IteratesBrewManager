@@ -3,7 +3,7 @@ using IteratesBrewManager.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace IteratesBrewManager.Application.Wholesalers.Commands.AddSale;
+namespace IteratesBrewManager.Application.Wholesalers.Commands.UpdateBeerQuantity;
 
 public record UpdateBeerQuantityCommand : IRequest<int>
 {
@@ -23,7 +23,7 @@ public class UpdateBeerQuantityCommandHandler : IRequestHandler<UpdateBeerQuanti
 
     public async Task<int> Handle(UpdateBeerQuantityCommand request, CancellationToken cancellationToken)
     {
-        var wholesalerBeer = await _context.WholesalerBeerItems.SingleAsync(wb => wb.BeerId == request.BeerId && wb.WholesalerId == request.WholesalerId, cancellationToken);
+        var wholesalerBeer = await _context.WholesalerBeerStocks.SingleAsync(wb => wb.BeerId == request.BeerId && wb.WholesalerId == request.WholesalerId, cancellationToken);
 
         wholesalerBeer.Stock += request.Quantity;
 

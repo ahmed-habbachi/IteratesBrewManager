@@ -251,10 +251,11 @@ export class BeersClient implements IBeersClient {
 export interface IBreweriesClient {
     getBreweries(query: GetBreweriesQuery | null | undefined): Observable<BreweryDto[]>;
     create(command: CreateBreweryCommand): Observable<number>;
-    getBeers(query: GetBeersByBreweryQuery | null | undefined): Observable<BreweryDto[]>;
     update(id: number, command: UpdateBreweryCommand): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
-    addSale(id: number, command: UpdateBreweryCommand): Observable<FileResponse>;
+    getBeers(id: number): Observable<BeerDto[]>;
+    addBeer(id: number, command: CreateBeerCommand): Observable<number>;
+    deleteBeer(id: number, beerId: number): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -380,63 +381,6 @@ export class BreweriesClient implements IBreweriesClient {
         return _observableOf(null as any);
     }
 
-    getBeers(query: GetBeersByBreweryQuery | null | undefined): Observable<BreweryDto[]> {
-        let url_ = this.baseUrl + "/api/Breweries/Beers?";
-        if (query !== undefined && query !== null)
-            url_ += "query=" + encodeURIComponent("" + query) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetBeers(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetBeers(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BreweryDto[]>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BreweryDto[]>;
-        }));
-    }
-
-    protected processGetBeers(response: HttpResponseBase): Observable<BreweryDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(BreweryDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
     update(id: number, command: UpdateBreweryCommand): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Breweries/{id}";
         if (id === undefined || id === null)
@@ -539,8 +483,66 @@ export class BreweriesClient implements IBreweriesClient {
         return _observableOf(null as any);
     }
 
-    addSale(id: number, command: UpdateBreweryCommand): Observable<FileResponse> {
-        let url_ = this.baseUrl + "/api/Breweries/{id}/Sale";
+    getBeers(id: number): Observable<BeerDto[]> {
+        let url_ = this.baseUrl + "/api/Breweries/{id}/Beers";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetBeers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetBeers(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BeerDto[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BeerDto[]>;
+        }));
+    }
+
+    protected processGetBeers(response: HttpResponseBase): Observable<BeerDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(BeerDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    addBeer(id: number, command: CreateBeerCommand): Observable<number> {
+        let url_ = this.baseUrl + "/api/Breweries/{id}/Beers";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -554,16 +556,71 @@ export class BreweriesClient implements IBreweriesClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAddBeer(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAddBeer(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<number>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<number>;
+        }));
+    }
+
+    protected processAddBeer(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteBeer(id: number, beerId: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Breweries/{id}/Beers/{beerId}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (beerId === undefined || beerId === null)
+            throw new Error("The parameter 'beerId' must be defined.");
+        url_ = url_.replace("{beerId}", encodeURIComponent("" + beerId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
                 "Accept": "application/octet-stream"
             })
         };
 
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAddSale(response_);
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteBeer(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAddSale(response_ as any);
+                    return this.processDeleteBeer(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<FileResponse>;
                 }
@@ -572,7 +629,7 @@ export class BreweriesClient implements IBreweriesClient {
         }));
     }
 
-    protected processAddSale(response: HttpResponseBase): Observable<FileResponse> {
+    protected processDeleteBeer(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -596,6 +653,7 @@ export class BreweriesClient implements IBreweriesClient {
 export interface IWholesalersClient {
     addSale(id: number, command: AddSaleCommand): Observable<number>;
     updateBeerQuantity(id: number, command: UpdateBeerQuantityCommand): Observable<number>;
+    requestQuote(id: number, command: RequestQuoteCommand): Observable<QuoteRequestResult>;
 }
 
 @Injectable({
@@ -713,6 +771,61 @@ export class WholesalersClient implements IWholesalersClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result200 = resultData200 !== undefined ? resultData200 : <any>null;
     
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    requestQuote(id: number, command: RequestQuoteCommand): Observable<QuoteRequestResult> {
+        let url_ = this.baseUrl + "/api/Wholesalers/{id}/RequestQuote";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRequestQuote(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRequestQuote(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<QuoteRequestResult>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<QuoteRequestResult>;
+        }));
+    }
+
+    protected processRequestQuote(response: HttpResponseBase): Observable<QuoteRequestResult> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = QuoteRequestResult.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -988,36 +1101,6 @@ export class GetBreweriesQuery implements IGetBreweriesQuery {
 export interface IGetBreweriesQuery {
 }
 
-export class GetBeersByBreweryQuery implements IGetBeersByBreweryQuery {
-
-    constructor(data?: IGetBeersByBreweryQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): GetBeersByBreweryQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new GetBeersByBreweryQuery();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface IGetBeersByBreweryQuery {
-}
-
 export class CreateBreweryCommand implements ICreateBreweryCommand {
     name?: string;
 
@@ -1178,6 +1261,242 @@ export class UpdateBeerQuantityCommand implements IUpdateBeerQuantityCommand {
 
 export interface IUpdateBeerQuantityCommand {
     wholesalerId?: number;
+    beerId?: number;
+    quantity?: number;
+}
+
+export class QuoteRequestResult implements IQuoteRequestResult {
+    succeeded?: boolean;
+    quote?: QuoteDto | undefined;
+    errorMessage?: string | undefined;
+
+    constructor(data?: IQuoteRequestResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.succeeded = _data["succeeded"];
+            this.quote = _data["quote"] ? QuoteDto.fromJS(_data["quote"]) : <any>undefined;
+            this.errorMessage = _data["errorMessage"];
+        }
+    }
+
+    static fromJS(data: any): QuoteRequestResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new QuoteRequestResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["succeeded"] = this.succeeded;
+        data["quote"] = this.quote ? this.quote.toJSON() : <any>undefined;
+        data["errorMessage"] = this.errorMessage;
+        return data;
+    }
+}
+
+export interface IQuoteRequestResult {
+    succeeded?: boolean;
+    quote?: QuoteDto | undefined;
+    errorMessage?: string | undefined;
+}
+
+export class QuoteDto implements IQuoteDto {
+    wholesalerId?: number;
+    wholesalerName?: string;
+    priceToPay?: number;
+    quoteItems?: QuoteItemDto[];
+
+    constructor(data?: IQuoteDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wholesalerId = _data["wholesalerId"];
+            this.wholesalerName = _data["wholesalerName"];
+            this.priceToPay = _data["priceToPay"];
+            if (Array.isArray(_data["quoteItems"])) {
+                this.quoteItems = [] as any;
+                for (let item of _data["quoteItems"])
+                    this.quoteItems!.push(QuoteItemDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): QuoteDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new QuoteDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wholesalerId"] = this.wholesalerId;
+        data["wholesalerName"] = this.wholesalerName;
+        data["priceToPay"] = this.priceToPay;
+        if (Array.isArray(this.quoteItems)) {
+            data["quoteItems"] = [];
+            for (let item of this.quoteItems)
+                data["quoteItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IQuoteDto {
+    wholesalerId?: number;
+    wholesalerName?: string;
+    priceToPay?: number;
+    quoteItems?: QuoteItemDto[];
+}
+
+export class QuoteItemDto implements IQuoteItemDto {
+    beerName?: string;
+    beerPrice?: number;
+    quantity?: number;
+
+    constructor(data?: IQuoteItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.beerName = _data["beerName"];
+            this.beerPrice = _data["beerPrice"];
+            this.quantity = _data["quantity"];
+        }
+    }
+
+    static fromJS(data: any): QuoteItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new QuoteItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["beerName"] = this.beerName;
+        data["beerPrice"] = this.beerPrice;
+        data["quantity"] = this.quantity;
+        return data;
+    }
+}
+
+export interface IQuoteItemDto {
+    beerName?: string;
+    beerPrice?: number;
+    quantity?: number;
+}
+
+export class RequestQuoteCommand implements IRequestQuoteCommand {
+    saveRequest?: boolean;
+    wholesalerId?: number;
+    beerQuantityPair?: BeerQuantityPairDto[];
+
+    constructor(data?: IRequestQuoteCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.saveRequest = _data["saveRequest"];
+            this.wholesalerId = _data["wholesalerId"];
+            if (Array.isArray(_data["beerQuantityPair"])) {
+                this.beerQuantityPair = [] as any;
+                for (let item of _data["beerQuantityPair"])
+                    this.beerQuantityPair!.push(BeerQuantityPairDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): RequestQuoteCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new RequestQuoteCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["saveRequest"] = this.saveRequest;
+        data["wholesalerId"] = this.wholesalerId;
+        if (Array.isArray(this.beerQuantityPair)) {
+            data["beerQuantityPair"] = [];
+            for (let item of this.beerQuantityPair)
+                data["beerQuantityPair"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IRequestQuoteCommand {
+    saveRequest?: boolean;
+    wholesalerId?: number;
+    beerQuantityPair?: BeerQuantityPairDto[];
+}
+
+export class BeerQuantityPairDto implements IBeerQuantityPairDto {
+    beerId?: number;
+    quantity?: number;
+
+    constructor(data?: IBeerQuantityPairDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.beerId = _data["beerId"];
+            this.quantity = _data["quantity"];
+        }
+    }
+
+    static fromJS(data: any): BeerQuantityPairDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BeerQuantityPairDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["beerId"] = this.beerId;
+        data["quantity"] = this.quantity;
+        return data;
+    }
+}
+
+export interface IBeerQuantityPairDto {
     beerId?: number;
     quantity?: number;
 }

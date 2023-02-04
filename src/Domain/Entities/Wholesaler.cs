@@ -8,7 +8,7 @@ namespace IteratesBrewManager.Domain.Entities;
 public class Wholesaler : BaseAuditableEntity
 {
     public string Name { get; set; }
-    public IList<WholesalerBeer> WholesalerBeerItems { get; private set; } = new List<WholesalerBeer>();
+    public IList<WholesalerBeerStock> WholesalerBeerItems { get; private set; } = new List<WholesalerBeerStock>();
 
     public Wholesaler()
     {

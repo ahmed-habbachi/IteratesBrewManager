@@ -220,44 +220,6 @@
         }
       }
     },
-    "/api/Breweries/Beers": {
-      "get": {
-        "tags": [
-          "Breweries"
-        ],
-        "operationId": "Breweries_GetBeers",
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
-            "schema": {
-              "nullable": true,
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/GetBeersByBreweryQuery"
-                }
-              ]
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BreweryDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Breweries/{id}": {
       "put": {
         "tags": [
@@ -334,12 +296,45 @@
         }
       }
     },
-    "/api/Breweries/{id}/Sale": {
-      "put": {
+    "/api/Breweries/{id}/Beers": {
+      "get": {
         "tags": [
           "Breweries"
         ],
-        "operationId": "Breweries_AddSale",
+        "operationId": "Breweries_GetBeers",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BeerDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Breweries"
+        ],
+        "operationId": "Breweries_AddBeer",
         "parameters": [
           {
             "name": "id",
@@ -357,13 +352,56 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateBreweryCommand"
+                "$ref": "#/components/schemas/CreateBeerCommand"
               }
             }
           },
           "required": true,
           "x-position": 2
         },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Breweries/{id}/Beers/{beerId}": {
+      "delete": {
+        "tags": [
+          "Breweries"
+        ],
+        "operationId": "Breweries_DeleteBeer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "beerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -462,6 +500,50 @@
                 "schema": {
                   "type": "integer",
                   "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Wholesalers/{id}/RequestQuote": {
+      "post": {
+        "tags": [
+          "Wholesalers"
+        ],
+        "operationId": "Wholesalers_RequestQuote",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestQuoteCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteRequestResult"
                 }
               }
             }
@@ -570,10 +652,6 @@
         "type": "object",
         "additionalProperties": false
       },
-      "GetBeersByBreweryQuery": {
-        "type": "object",
-        "additionalProperties": false
-      },
       "CreateBreweryCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -622,6 +700,100 @@
             "type": "integer",
             "format": "int32"
           },
+          "beerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "QuoteRequestResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "succeeded": {
+            "type": "boolean"
+          },
+          "quote": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/QuoteDto"
+              }
+            ]
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "QuoteDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "wholesalerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wholesalerName": {
+            "type": "string"
+          },
+          "priceToPay": {
+            "type": "number",
+            "format": "double"
+          },
+          "quoteItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuoteItemDto"
+            }
+          }
+        }
+      },
+      "QuoteItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "beerName": {
+            "type": "string"
+          },
+          "beerPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RequestQuoteCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "saveRequest": {
+            "type": "boolean"
+          },
+          "wholesalerId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "beerQuantityPair": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BeerQuantityPairDto"
+            }
+          }
+        }
+      },
+      "BeerQuantityPairDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
           "beerId": {
             "type": "integer",
             "format": "int32"

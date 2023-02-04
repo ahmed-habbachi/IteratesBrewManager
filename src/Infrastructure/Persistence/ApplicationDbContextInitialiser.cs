@@ -83,7 +83,9 @@ public class ApplicationDbContextInitialiser
             _context.Wholesalers.Add(wholesaler);
             await _context.SaveChangesAsync();
 
-            _context.WholesalerBeerItems.Add(new(wholesaler, newBeer, 10));
+            _context.WholesalerBeerStocks.Add(new(wholesaler, newBeer, 10));
+            _context.WholesalerBeerStocks.Add(new(wholesaler, newBeerTwo, 40));
+            _context.WholesalerBeerStocks.Add(new(wholesaler, newBeerThree, 60));
             await _context.SaveChangesAsync();
         }
     }

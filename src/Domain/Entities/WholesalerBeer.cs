@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace IteratesBrewManager.Domain.Entities;
-public class WholesalerBeer : BaseAuditableEntity
+public class WholesalerBeerStock : BaseAuditableEntity
 {
     public int WholesalerId { get; set; }
     public Wholesaler Wholesaler { get; set; }
@@ -13,12 +13,12 @@ public class WholesalerBeer : BaseAuditableEntity
     public Beer Beer { get; set; }
     public int Stock { get; set; }
 
-    public WholesalerBeer()
+    public WholesalerBeerStock()
     {
 
     }
 
-    public WholesalerBeer(Wholesaler wholesaler, Beer beer, int stock)
+    public WholesalerBeerStock(Wholesaler wholesaler, Beer beer, int stock)
     {
         WholesalerId = wholesaler.Id;
         Wholesaler = wholesaler;
